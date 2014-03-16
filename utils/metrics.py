@@ -21,6 +21,7 @@ count = 0
 
 for n in Bar('Processing', suffix = '%(index)d/%(max)d %(percent).1f%% - %(eta_td)s').iter(G):
   paths = nx.single_source_shortest_path_length(G,n)
+  del paths[n] # remove path to self
   for length in paths.itervalues():
     summ += length
     count += 1
