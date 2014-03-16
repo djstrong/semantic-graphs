@@ -17,18 +17,13 @@ print 'degree_histogram', nx.degree_histogram(G) # P(k)
   
 diameter = 0
 summ = 0
-count = 0
 
-for n in Bar('Processing', suffix = '%(index)d/%(max)d %(percent).1f%% - %(eta_td)s').iter(G):
-  paths = nx.single_source_shortest_path_length(G,n)
-  del paths[n] # remove path to self
-  for length in paths.itervalues():
-    summ += length
-    count += 1
-    if length > diameter: diameter = length
+for node in Bar('Processing', suffix = '%(index)d/%(max)d %(percent).1f%% - %(eta_td)s').iter(G):
+  path_length = nx.single_source_shortest_path_length(G, node)
+  summ += sum(path_length.values())
+  diameter = max(diameter, max(path_length.values()))
 
-average_shortest_path_length = float(summ)/count
+n=len(G)
+average_shortest_path_length = float(summ)/(n*(n-1))
 print 'diameter', diameter # D
 print 'average_shortest_path_length', average_shortest_path_length # L
-  
-
