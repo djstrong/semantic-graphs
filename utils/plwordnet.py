@@ -1,5 +1,8 @@
 from nltk.corpus import wordnet as wn
 import networkx as nx
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 # In NLTK 2.0.4 plWordNet is not working properly, because of not using Unicode.
 
@@ -17,11 +20,21 @@ G = nx.MultiDiGraph()
 
 # TODO add pos to nodes ?
 
+def add_node(G, synset, words=True):
+  synset_name = synset.name.decode('utf-8')
+  G.add_node(synset_name, depth=synset.max_depth())
+  #print synset
+  if words:
+    for lemma in synset.lemmas:
+      #print lemma, lemma.name
+      G.add_node(lemma.name)
+      G.add_edge(synset_name, lemma.name, relation='lemma')
+
 for pos in pos_tags:
   for synset in wn.all_synsets(pos):
     #print synset.name
     synset_name = synset.name.decode('utf-8') 
-    G.add_node(synset_name, depth=synset.max_depth())
+    add_node(G, synset)
     for method in relations:
       result = getattr(synset, method)()
       #if result:
@@ -29,12 +42,12 @@ for pos in pos_tags:
         #print method
         #print result
       for related_synset in result:
-        related_synset_name = related_synset.name.decode('utf-8') 
-        G.add_node(related_synset_name, depth=related_synset.max_depth())
+        related_synset_name = related_synset.name.decode('utf-8')
+        add_node(G, related_synset)
         G.add_edge(synset_name, related_synset_name, relation=method)
 
-nx.write_gexf(G, "slowosiec.gexf")
-nx.write_graphml(G, "slowosiec.graphml")
+nx.write_gexf(G, "slowosiec-words.gexf")
+#nx.write_graphml(G, "slowosiec.graphml")
 #nx.write_gml(G,"slowosiec.gml") # don't work with unicode
 
 

@@ -21,6 +21,7 @@ strongly_connected_components = nx.strongly_connected_component_subgraphs(G)
 
 name = path.rsplit('.', 1)[0]
 
+print 'the biggest components:'
 for i, component in enumerate(strongly_connected_components[:NUMBER_OF_COMPONENTS]):
   print i
   print 'number_of_nodes', nx.number_of_nodes(component)
